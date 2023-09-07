@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get Current Location</title>
+  </head>
+  <body>
+    <h1>Current Location</h1>
+    <p>Latitude: <span id="latitude"></span></p>
+    <p>Longitude: <span id="longitude"></span></p>
+    <p>Status: <span id="status"></span></p>
+    <!-- Include your JavaScript code here -->
+    <script>
+      // Check if the browser supports Geolocation
+      function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radius of the Earth in kilometers
+        const dLat = (lat2 - lat1) * (Math.PI / 180);
+        const dLon = (lon2 - lon1) * (Math.PI / 180);
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(lat1 * (Math.PI / 180)) *
+            Math.cos(lat2 * (Math.PI / 180)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c; // Distance in kilometers
+        return distance;
+      }
+
+      // Check if the browser supports Geolocation
+      if ("geolocation" in navigator) {
+        // Get the user's current position
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            // Extract latitude and longitude from the position object
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            document.getElementById("latitude").textContent = latitude;
+            document.getElementById("longitude").textContent = longitude;
+            // Coordinates of the target location
+            var targetLatitude = 9.510106478223157;
+            var targetLongitude = 76.55138090155343;
+
+            // Calculate the distance between current and target locations
+            var distance = calculateDistance(
+              latitude,
+              longitude,
+              targetLatitude,
+              targetLongitude
+            );
+
+            // Set a threshold for the range (e.g., 10 kilometers)
+            var rangeThreshold = 10;
+
+            // Check if the distance is within the range
+            if (distance <= rangeThreshold) {
+              console.log("In range");
+              document.getElementById("status").textContent = "In range";
+              document.getElementById("status").style.color = "green";
+            } else {
+              console.log("Not in range");
+              document.getElementById("status").textContent = "Not in range";
+              document.getElementById("status").style.color = "red";
+            }
+          },
+          function (error) {
+            // Handle errors (e.g., user denied permission or unable to retrieve location)
+            console.error("Error getting location:", error);
+          }
+        );
+      } else {
+        // Geolocation is not available in this browser
+        console.error("Geolocation is not available.");
+      }
+    </script>
+  </body>
+</html>
